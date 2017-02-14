@@ -1,0 +1,4 @@
+---
+# defaults file for python-check-requirements
+virtualenv        :
+requirements_file :

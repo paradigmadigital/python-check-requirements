@@ -1,0 +1,25 @@
+---
+# tasks file for python-check-requirements
+- name: Check pip is installed anywhere but CentOS
+  package: name=python-pip state=present
+  become: True
+  when: ansible_os_family != "RedHat"
+
+- name: Check pip is installed in CentOS
+  shell: 'curl https://bootstrap.pypa.io/get-pip.py | sudo python -'
+  become: True
+  when: ansible_os_family == "RedHat"
+
+- name: Check virtualenv is installed
+  pip: name=virtualenv state=present
+  become: True
+  when: virtualenv is defined
+
+- name: Check the requirements in the specified virtualenv
+  pip: requirements={{requirements_file}} virtualenv={{virtualenv}}
+  when: virtualenv is defined
+
+- name: Check the requirements globally
+  pip: requirements={{requirements_file}} 
+  when: virtualenv is undefined
+  become: true
