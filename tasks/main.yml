@@ -15,8 +15,14 @@
   become: True
   when: virtualenv is defined
 
+- name: Upgrade pip
+  pip: name=pip extra_args='--upgrade' virtualenv={{virtualenv}}
+  become: True
+  when: virtualenv is defined
+
 - name: Check the requirements in the specified virtualenv
   pip: requirements={{requirements_file}} virtualenv={{virtualenv}}
+  become: True
   when: virtualenv is defined
 
 - name: Check the requirements globally
