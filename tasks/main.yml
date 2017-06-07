@@ -1,5 +1,11 @@
 ---
 # tasks file for python-check-requirements
+- name: Wait until apt is not blocked
+  become: yes
+  shell: if [[ -e $(cat /var/lib/dpkg/lock) ]]; then while [[ -n $(cat /var/lib/dpkg/lock) ]]; do sleep 5; done; fi
+  when:
+    ansible_os_family == "Debian"
+
 - name: Check pip is installed anywhere but CentOS
   package: name=python-pip state=present
   become: True
@@ -26,6 +32,6 @@
   when: virtualenv is defined
 
 - name: Check the requirements globally
-  pip: requirements={{requirements_file}} 
+  pip: requirements={{requirements_file}}
   when: virtualenv is undefined
   become: true
