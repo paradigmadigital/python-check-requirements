@@ -1,13 +1,16 @@
 ---
 # tasks file for python-check-requirements
+
 - name: Wait until apt is not blocked
   become: yes
-  shell: if [[ -e $(cat /var/lib/dpkg/lock) ]]; then while [[ -n $(cat /var/lib/dpkg/lock) ]]; do sleep 5; done; fi
+  shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1 ; do sleep 5; done
   when:
     ansible_os_family == "Debian"
+    or
+    ansible_distribution == 'Ubuntu'
 
 - name: Check pip is installed anywhere but CentOS
-  package: name=python-pip state=present
+  package: name=python-pip state=latest
   become: True
   when: ansible_os_family != "RedHat"
 
