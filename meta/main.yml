@@ -206,8 +206,6 @@ galaxy_info:
   #  versions:
   #  - all
   #  - Any
-  - name: CentOS
-    - 7
 
   galaxy_tags:
     - python
