@@ -1,7 +1,16 @@
 ---
 # tasks file for python-check-requirements
+
+- name: Wait until apt is not blocked
+  become: yes
+  shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1 ; do sleep 5; done
+  when:
+    ansible_os_family == "Debian"
+    or
+    ansible_distribution == 'Ubuntu'
+
 - name: Check pip is installed anywhere but CentOS
-  package: name=python-pip state=present
+  package: name=python-pip state=latest
   become: True
   when: ansible_os_family != "RedHat"
 
@@ -15,11 +24,17 @@
   become: True
   when: virtualenv is defined
 
+- name: Upgrade pip
+  pip: name=pip extra_args='--upgrade' virtualenv={{virtualenv}}
+  become: True
+  when: virtualenv is defined
+
 - name: Check the requirements in the specified virtualenv
   pip: requirements={{requirements_file}} virtualenv={{virtualenv}}
+  become: True
   when: virtualenv is defined
 
 - name: Check the requirements globally
-  pip: requirements={{requirements_file}} 
+  pip: requirements={{requirements_file}}
   when: virtualenv is undefined
   become: true
